@@ -1,0 +1,31 @@
+
+1. The Analog Keyboards are Analog Button Ladders where the value of the analog signal changes when the buttons are pressed. 
+
+2. This code supports 5 buttons. With a little additional code you can add more buttons if your Analog Ladder supports. I chose to use #defines instead of variables
+for buttons to reduce the memory requirements for this module. 
+
+3. The keyboard configuration is controlled via #define statements. You can either modify these in your local 
+copy of AnalogKeyboard.h or you can override these values by defining them before the include "AnalogKeyboard.h" I wrapped them in #ifndef so you can set these outside of the AnalogKeyboard.h
+
+4. The defines come in several groups.
+	A. Values of the Signal for each button.
+	B. Debounce settings (dependent upon how bouncy your buttons are)
+	C. Stability and Value correction
+	D. Pin assignment
+
+4A. Button Values are defined by assigning a value to that button based on the return value of analogRead(pin) when the button is pressed. For example:
+#define AK_KEY_KEY_VALUE_1 190 
+4B. To get the value of a key put the AnalogRead() with the correct pin value in your loop() and Serial.println the value. You can easily read it in the serial output. 
+
+5. Some of these Analog Keyboards are very bouncy and the signals are not constant. To deal with this there are two #defines used in the AnalogKeyboard Class. 
+A. AK_DEBOUNCEDEPTH : which controls the number of times the value must be read before the button is considered down. In my own tests 200 reads was a good value. 
+B. AK_KEY_READINGCORRECTION : which controls the range of values for a button. In my tests I found the button values jumped around a bit. 25 was a good value for the test board.
+
+6. During my development I found that while there was some deviation in some buttons between presses when i pressed the button it eventually settled down to a small range of numbers. 
+So I created a ranging factor for determining when it was stable: AK_STABLESTATECORRECTION 
+NOTE: you could use the same value as AK_KEY_READINGCORRECTION it just ended up in my testing two being two different values as I was using them to solve two differen problems I noted. 
+
+Once the defines are configured all that really needs to be done is to Initialize the Object with a Callback to get button press events and to call the update() method in your loop().
+
+There is room for expansion on this class but in this version its pretty small for all that it does. I think if you have a less bouncy button board then I had it could be smaller
+and more responsive to button presses. The test board I used may have had a "cold solder" pin or more than one. 
